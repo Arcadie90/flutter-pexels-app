@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:pexels_app/model/pexels.dart';
+import 'package:pexels_app/pages/about_page.dart';
 import 'package:pexels_app/pages/search_page.dart';
 import 'package:pexels_app/pages/wallpapers_page.dart';
 import 'package:pexels_app/provider/api_provider.dart';
 import 'package:circular_bottom_navigation/circular_bottom_navigation.dart';
 import 'package:circular_bottom_navigation/tab_item.dart';
+
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -23,7 +25,6 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> with SingleTickerProviderStateMixin {
-  
   CircularBottomNavigationController _navigationController;
   Pexels pexel;
   int pageNo = 1;
@@ -32,27 +33,29 @@ class _AppState extends State<App> with SingleTickerProviderStateMixin {
   List<TabItem> tabItems = List.of([
     new TabItem(Icons.image, "Wallpapers", Colors.blue),
     new TabItem(Icons.search, "Search", Colors.blue),
+    new TabItem(Icons.person, "About", Colors.blue)
   ]);
 
   @override
   void initState() {
     super.initState();
-    fetchData("wallpaper",20);
-  
+    fetchData("wallpaper", 20);
+
     _navigationController = new CircularBottomNavigationController(selectedPos);
   }
 
-  incPage(){  
+  incPage() {
     setState(() {
       pageNo++;
     });
   }
 
   Future<void> fetchData(String query, int perPage) async {
-    var data = await http.get(ApiProvider.url("wallpaper", pageNo, 20), headers: ApiProvider.headers);
+    var data = await http.get(ApiProvider.url("wallpaper", pageNo, 20),
+        headers: ApiProvider.headers);
     var decoded = jsonDecode(data.body);
     incPage();
-    setState((){
+    setState(() {
       pexel = Pexels.fromJson(decoded);
     });
   }
@@ -63,11 +66,12 @@ class _AppState extends State<App> with SingleTickerProviderStateMixin {
         return WallpapersPage(pexel, fetchData);
       case 1:
         return SearchPage();
-       
+      case 2:
+        return AboutPage();
       default:
-      return Center(
-        child: CircularProgressIndicator(),
-      );
+        return Center(
+          child: CircularProgressIndicator(),
+        );
     }
   }
 
@@ -78,8 +82,7 @@ class _AppState extends State<App> with SingleTickerProviderStateMixin {
         title: Text('Pexels App'),
         elevation: 12.0,
       ),
-      body: (pexel == null)
-          ? LinearProgressIndicator() : bodyContainer(),
+      body: (pexel == null) ? LinearProgressIndicator() : bodyContainer(),
       bottomNavigationBar: CircularBottomNavigation(
         tabItems,
         controller: _navigationController,

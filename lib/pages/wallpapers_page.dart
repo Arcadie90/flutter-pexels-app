@@ -3,6 +3,7 @@ import 'package:pexels_app/model/pexels.dart';
 import 'package:pexels_app/pages/photo_view_page.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
+
 class WallpapersPage extends StatefulWidget {
   final Pexels pexel;
   final Function(String, int) fetchData;
